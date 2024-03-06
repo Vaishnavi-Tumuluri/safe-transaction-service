@@ -2,6 +2,8 @@ import factory
 from eth_account import Account
 from factory.django import DjangoModelFactory
 
+from gnosis.safe.safe_signature import SafeSignatureType
+
 from ..models import SafeMessage, SafeMessageConfirmation
 from ..utils import get_hash_for_message, get_safe_message_hash_for_message
 
@@ -36,4 +38,4 @@ class SafeMessageConfirmationFactory(DjangoModelFactory):
             "signature"
         ].hex()
     )
-    signature_type = 2
+    signature_type = SafeSignatureType.EOA.value
