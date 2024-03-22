@@ -2,18 +2,21 @@ from django.contrib import admin
 
 from eth_typing import ChecksumAddress, HexStr
 
+from gnosis.eth.django.admin import AdvancedAdminSearchMixin
+
 from safe_transaction_service.history import models as history_models
 
 from .models import SafeOperation, UserOperation, UserOperationReceipt
 
 
 @admin.register(UserOperation)
-class UserOperationAdmin(admin.ModelAdmin):
+class UserOperationAdmin(AdvancedAdminSearchMixin, admin.ModelAdmin):
     list_display = ("hash", "ethereum_tx", "sender", "nonce", "success")
     list_filter = [
         "receipt__success",
     ]
     search_fields = [
+        "==hash",
         "==sender",
     ]
     ordering = ["-nonce"]
@@ -24,7 +27,7 @@ class UserOperationAdmin(admin.ModelAdmin):
 
 
 @admin.register(UserOperationReceipt)
-class UserOperationReceiptAdmin(admin.ModelAdmin):
+class UserOperationReceiptAdmin(AdvancedAdminSearchMixin, admin.ModelAdmin):
     list_display = (
         "user_operation_hash",
         "user_operation_sender",
@@ -36,6 +39,7 @@ class UserOperationReceiptAdmin(admin.ModelAdmin):
         "success",
     ]
     search_fields = [
+        "==user_operation__hash",
         "==user_operation__sender",
     ]
 
@@ -53,7 +57,7 @@ class UserOperationReceiptAdmin(admin.ModelAdmin):
 
 
 @admin.register(SafeOperation)
-class SafeOperationAdmin(admin.ModelAdmin):
+class SafeOperationAdmin(AdvancedAdminSearchMixin, admin.ModelAdmin):
     list_display = (
         "hash",
         "user_operation_hash",
@@ -66,6 +70,8 @@ class SafeOperationAdmin(admin.ModelAdmin):
     list_filter = ["module_address"]
     list_select_related = ["user_operation__receipt"]
     search_fields = [
+        "==hash",
+        "==user_operation__hash",
         "==user_operation__sender",
     ]
     ordering = ["-modified"]
